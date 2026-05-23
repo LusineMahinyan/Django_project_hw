@@ -13,6 +13,7 @@ class Category(models.Model):
         return self.name
 
 class Product(models.Model):
+    objects = None
     name = models.CharField(max_length=100, verbose_name="Наименование")
     description = models.TextField(verbose_name="Описание")
     image = models.ImageField(

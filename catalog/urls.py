@@ -4,6 +4,7 @@ from catalog.views import (
     home,
     contacts,
     product_detail,
+    product_create,
 )
 
 app_name = CatalogConfig.name
@@ -11,9 +12,6 @@ app_name = CatalogConfig.name
 urlpatterns = [
     path("", home, name="home"),
     path("contacts/", contacts, name="contacts"),
-    path(
-        "products/<int:pk>/",
-        product_detail,
-        name="product_detail",
-    ),
+    path("products/<int:pk>/", product_detail, name="product_detail"),
+    path("product/create/", product_create, name="product_create"),
 ]
