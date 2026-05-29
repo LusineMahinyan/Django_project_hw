@@ -56,3 +56,59 @@ def product_create(request):
         "catalog/product_form.html",
         context,
     )
+
+def product_update(request, pk):
+
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == "POST":
+
+        form = ProductForm(
+            request.POST,
+            request.FILES,
+            instance=product,
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            return redirect(
+                "catalog:product_detail",
+                pk=product.pk,
+            )
+
+    else:
+
+        form = ProductForm(instance=product)
+
+    context = {
+        "form": form,
+    }
+
+    return render(
+        request,
+        "catalog/product_form.html",
+        context,
+    )
+
+
+def product_delete(request, pk):
+
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == "POST":
+
+        product.delete()
+
+        return redirect("catalog:home")
+
+    context = {
+        "product": product,
+    }
+
+    return render(
+        request,
+        "catalog/product_confirm_delete.html",
+        context,
+    )
