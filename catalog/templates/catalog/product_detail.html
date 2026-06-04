@@ -25,6 +25,20 @@
 
     </h3>
 
+    <a href="{% url 'catalog:product_update' product.pk %}"
+       class="btn btn-warning">
+
+        Редактировать
+
+    </a>
+
+    <a href="{% url 'catalog:product_delete' product.pk %}"
+       class="btn btn-danger">
+
+        Удалить
+
+    </a>
+
     <a href="{% url 'catalog:home' %}"
        class="btn btn-primary">
 
