@@ -1,38 +1,38 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import (
-    render,
-    get_object_or_404,
-    redirect,
-)
+from django.core.cache import cache
+from django.shortcuts import render, get_object_or_404, redirect
 
 from catalog.models import Product
 from catalog.forms import ProductForm
-
+from catalog.services import get_products_by_category
 
 def home(request):
     products = Product.objects.all()
 
-    context = {
-        "products": products,
-    }
-
-    return render(request, "catalog/home.html", context)
-
+    return render(
+        request,
+        "catalog/home.html",
+        {"products": products},
+    )
 
 def contacts(request):
     return render(request, "catalog/contacts.html")
 
-
 def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+    cache_key = f"product_{pk}"
 
-    context = {
-        "product": product,
-    }
+    product = cache.get(cache_key)
 
-    return render(request, "catalog/product_detail.html", context)
+    if product is None:
+        product = get_object_or_404(Product, pk=pk)
+        cache.set(cache_key, product, 60 * 5)
 
+    return render(
+        request,
+        "catalog/product_detail.html",
+        {"product": product},
+    )
 
 @login_required
 def product_create(request):
@@ -55,7 +55,6 @@ def product_create(request):
         "catalog/product_form.html",
         {"form": form},
     )
-
 
 @login_required
 def product_update(request, pk):
@@ -81,7 +80,6 @@ def product_update(request, pk):
         {"form": form},
     )
 
-
 @login_required
 def product_delete(request, pk):
 
@@ -98,4 +96,13 @@ def product_delete(request, pk):
         request,
         "catalog/product_confirm_delete.html",
         {"product": product},
+    )
+
+def category_products(request, category_id):
+    products = get_products_by_category(category_id)
+
+    return render(
+        request,
+        "catalog/category_products.html",
+        {"products": products},
     )
