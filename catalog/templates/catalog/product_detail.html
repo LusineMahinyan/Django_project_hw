@@ -7,29 +7,32 @@
     <h1>{{ product.name }}</h1>
 
     {% if product.image %}
-
-        <img src="{{ product.image.url }}"
-             width="300">
-
+        <img src="{{ product.image.url }}" width="300">
     {% endif %}
 
     <p>
-
         {{ product.description }}
-
     </p>
 
     <h3>
-
         {{ product.price }}
-
     </h3>
+
+    {% if user == product.owner or perms.catalog.delete_product %}
+        <a href="{% url 'catalog:product_update' product.pk %}"
+           class="btn btn-warning">
+            Редактировать
+        </a>
+
+        <a href="{% url 'catalog:product_delete' product.pk %}"
+           class="btn btn-danger">
+            Удалить
+        </a>
+    {% endif %}
 
     <a href="{% url 'catalog:home' %}"
        class="btn btn-primary">
-
         На главную
-
     </a>
 
 </div>
