@@ -17,85 +17,150 @@ def home(request):
         "products": products,
     }
 
-    return render(request, "catalog/home.html", context)
+    return render(
+        request,
+        "catalog/home.html",
+        context,
+    )
 
 
 def contacts(request):
-    return render(request, "catalog/contacts.html")
+    return render(
+        request,
+        "catalog/contacts.html",
+    )
 
 
 def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+    product = get_object_or_404(
+        Product,
+        pk=pk,
+    )
 
     context = {
         "product": product,
     }
 
-    return render(request, "catalog/product_detail.html", context)
+    return render(
+        request,
+        "catalog/product_detail.html",
+        context,
+    )
 
 
 @login_required
 def product_create(request):
 
     if request.method == "POST":
-        form = ProductForm(request.POST, request.FILES)
+
+        form = ProductForm(
+            request.POST,
+            request.FILES,
+        )
 
         if form.is_valid():
-            product = form.save(commit=False)
+
+            product = form.save(
+                commit=False,
+            )
+
             product.owner = request.user
+
             product.save()
 
-            return redirect("catalog:home")
+            return redirect(
+                "catalog:home",
+            )
 
     else:
+
         form = ProductForm()
 
     return render(
         request,
         "catalog/product_form.html",
-        {"form": form},
+        {
+            "form": form,
+        },
     )
 
 
 @login_required
 def product_update(request, pk):
 
-    product = get_object_or_404(Product, pk=pk)
+    product = get_object_or_404(
+        Product,
+        pk=pk,
+    )
 
-    if request.user != product.owner and not request.user.has_perm("catalog.change_product"):
+    if (
+        request.user != product.owner
+        and not request.user.has_perm(
+            "catalog.can_unpublish_product"
+        )
+    ):
         raise PermissionDenied()
 
     if request.method == "POST":
-        form = ProductForm(request.POST, request.FILES, instance=product)
+
+        form = ProductForm(
+            request.POST,
+            request.FILES,
+            instance=product,
+        )
 
         if form.is_valid():
+
             form.save()
-            return redirect("catalog:product_detail", pk=product.pk)
+
+            return redirect(
+                "catalog:product_detail",
+                pk=product.pk,
+            )
 
     else:
-        form = ProductForm(instance=product)
+
+        form = ProductForm(
+            instance=product,
+        )
 
     return render(
         request,
         "catalog/product_form.html",
-        {"form": form},
+        {
+            "form": form,
+        },
     )
 
 
 @login_required
 def product_delete(request, pk):
 
-    product = get_object_or_404(Product, pk=pk)
+    product = get_object_or_404(
+        Product,
+        pk=pk,
+    )
 
-    if request.user != product.owner and not request.user.has_perm("catalog.delete_product"):
+    if (
+        request.user != product.owner
+        and not request.user.has_perm(
+            "catalog.can_unpublish_product"
+        )
+    ):
         raise PermissionDenied()
 
     if request.method == "POST":
+
         product.delete()
-        return redirect("catalog:home")
+
+        return redirect(
+            "catalog:home",
+        )
 
     return render(
         request,
         "catalog/product_confirm_delete.html",
-        {"product": product},
+        {
+            "product": product,
+        },
     )

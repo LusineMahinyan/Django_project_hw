@@ -18,14 +18,12 @@
         {{ product.price }}
     </h3>
 
-    {% if user == product.owner %}
+    {% if user == product.owner or perms.catalog.delete_product %}
         <a href="{% url 'catalog:product_update' product.pk %}"
            class="btn btn-warning">
             Редактировать
         </a>
-    {% endif %}
 
-    {% if user == product.owner or perms.catalog.delete_product %}
         <a href="{% url 'catalog:product_delete' product.pk %}"
            class="btn btn-danger">
             Удалить
